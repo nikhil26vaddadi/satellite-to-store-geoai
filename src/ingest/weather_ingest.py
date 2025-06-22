@@ -24,7 +24,7 @@ HOURLY_VARS = [
 ]
 
 FORECAST_DAYS = 3          # how many days ahead
-OUT_DIR = "../../data/raw" # keep relative to this script
+OUT_DIR = "data/raw"   # keep relative to this script
 
 # -------------------------------------------------------------------
 # 2. HELPER – build URL for one location
