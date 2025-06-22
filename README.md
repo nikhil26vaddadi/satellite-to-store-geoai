@@ -36,7 +36,7 @@ Built entirely using **free/open-source tools** and student-tier cloud services.
 - [x] Project GitHub repo created
 - [x] Streamlit app live (hello world)
 - [x] Git version control and remote set
-- [ ] Weather data ingestion (in progress)
+- [x] Weather data ingestion
 - [ ] Satellite image processing
 - [ ] Demand prediction model
 - [ ] Supply chain optimizer
