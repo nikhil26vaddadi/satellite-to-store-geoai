@@ -3,7 +3,7 @@
 
 **Author:** Sai Nikhil Vaddadi  
 **Status:** In Development 🚧  
-**Live App:** [Click here to view on Streamlit](http://localhost:8501/)
+**Live App:** [Click here to view on Streamlit](https://q4qqdjlkajgvtdezmckra4.streamlit.app/)
 
 ---
 
