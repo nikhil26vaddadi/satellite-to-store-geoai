@@ -48,3 +48,27 @@ folium_static(m)
 
 st.markdown("### 🔍 Raw Forecast Data")
 st.dataframe(df[["city", "datetime", "predicted_demand"]].head(10))
+
+
+# --- New Section: Future Demand Forecast ---
+st.header("📈 Future Demand Forecast (Next 48 Hours)")
+
+# Load CSV
+FUTURE_PATH = "data/predictions/future_demand_48h.csv"
+@st.cache_data
+def load_future_demand():
+    df = pd.read_csv(FUTURE_PATH)
+    df["datetime"] = pd.to_datetime(df["datetime"])
+    return df
+
+# Show results
+future_df = load_future_demand()
+
+if not future_df.empty:
+    city = st.selectbox("Select City", future_df["city"].unique())
+    city_df = future_df[future_df["city"] == city]
+
+    st.line_chart(city_df.set_index("datetime")["predicted_demand"])
+    st.dataframe(city_df.reset_index(drop=True), use_container_width=True)
+else:
+    st.warning("⚠️ No future forecast available. Please generate it first.")

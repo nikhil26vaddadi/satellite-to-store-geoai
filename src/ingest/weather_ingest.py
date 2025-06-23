@@ -11,9 +11,11 @@ import pandas as pd
 # 1. CONFIG – edit these lists later as you add more store locations
 # -------------------------------------------------------------------
 LOCATIONS = {
-    "Cork_IE":  (51.8985, -8.4756),
+    "Cork_IE": (51.8985, -8.4756),
     "Dublin_IE": (53.3498, -6.2603),
-    "London_UK": (51.5072, -0.1276)
+    "London_UK": (51.5072, -0.1276),
+    "Berlin_DE": (52.5200, 13.4050),
+    "Madrid_ES": (40.4168, -3.7038)
 }
 
 HOURLY_VARS = [

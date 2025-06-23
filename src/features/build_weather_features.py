@@ -16,15 +16,20 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # ------------ HELPERS ------------
 def load_weather_csvs(input_dir):
-    files = sorted(glob(os.path.join(input_dir, "*.csv")))
+    files = sorted(glob(os.path.join(input_dir, "*_[A-Z][A-Z].csv")))
+    if not files:
+        print("❌ No weather files found in:", input_dir)
+        return pd.DataFrame()
+
     dfs = []
     for f in files:
-        city = f.split("_")[-1].replace(".csv", "")
+        # Extract city from filename (e.g., '20250623T122700Z_Berlin_DE.csv' → 'Berlin_DE')
+        city = f.split("_")[-2] + "_" + f.split("_")[-1].replace(".csv", "")
         df = pd.read_csv(f)
         df["datetime"] = pd.to_datetime(df["time"])
         df["city"] = city
         dfs.append(df)
-    return pd.concat(dfs)
+    return pd.concat(dfs, ignore_index=True)
 
 # ------------ FEATURE BUILDING ------------
 def build_features(df):
@@ -38,11 +43,34 @@ def build_features(df):
 # ------------ MAIN PIPELINE ------------
 def main():
     df = load_weather_csvs(INPUT_DIR)
-    print(f"Loaded {len(df)} rows")
+    print(f"✅ Loaded {len(df)} rows of weather data")
+
+    if df.empty:
+        print("❌ Exiting: No weather data found.")
+        return
+
+    # Feature engineering
     df_feat = build_features(df)
-    out_path = os.path.join(OUTPUT_DIR, "weather_features.csv")
-    df_feat.to_csv(out_path, index=False)
-    print(f"Saved features to {out_path} ({len(df_feat)} rows)")
+    print(f"✅ After feature engineering: {len(df_feat)} rows")
+
+    # Load demand data from SQLite
+    import sqlite3
+    conn = sqlite3.connect(os.path.join(INPUT_DIR, "geoai_store_demand.db"))
+    demand_df = pd.read_sql_query("SELECT * FROM store_demand", conn)
+    conn.close()
+
+    # Ensure datetime columns match
+    demand_df["datetime"] = pd.to_datetime(demand_df["datetime"])
+    df_feat["datetime"] = pd.to_datetime(df_feat["datetime"])
+
+    # Merge demand into weather features
+    df_merged = df_feat.merge(demand_df, on=["city", "datetime"], how="left")
+
+    # Final output
+    out_path = os.path.join(OUTPUT_DIR, "features.csv")
+    df_merged.to_csv(out_path, index=False)
+    print(f"✅ Saved features+labels to {out_path} ({len(df_merged)} rows)")
+
 
 if __name__ == "__main__":
     main()
